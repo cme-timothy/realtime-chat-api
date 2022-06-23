@@ -1,5 +1,7 @@
 const { Server } = require("socket.io");
 
+let rooms = [];
+
 const io = new Server({
   cors: {
     origin: "*",
@@ -10,23 +12,31 @@ const io = new Server({
 io.on("connection", (socket) => {
   console.log(`Socket with id: ${socket.id} has connected`);
 
-  socket.on("join_room", (data) => {
+  socket.on("get_rooms", () => {
+    socket.emit("all_rooms", rooms);
+  });
+
+  socket.on("create_room", (data) => {
+    rooms.push({ roomName: data, userId: socket.id });
     console.log(`Socket with id: ${socket.id} has joined ${data}`);
     socket.join(data);
-    console.log(socket.rooms);
+  });
+
+  socket.on("join_room", (data) => {
+    rooms.push({ roomName: data, userId: socket.id });
+    console.log(`Socket with id: ${socket.id} has joined ${data}`);
+    socket.join(data);
   });
 
   socket.on("leave_room", (data) => {
+    rooms = rooms.filter((room) => room.roomName !== data);
     console.log(`Socket with id: ${socket.id} has left room: ${data}`);
     socket.leave(data);
-    console.log(socket.rooms);
   });
 
-  io.emit("new_client", "A new client has joined");
-
   socket.on("message", (data) => {
-    console.log(`${socket.id} has sent ${data}`);
-    socket.broadcast.emit("message", data);
+    const parsedData = JSON.parse(data);
+    socket.to(parsedData.roomName).emit("new_message", parsedData.message);
   });
 
   socket.on("disconnect", (reason) => {
