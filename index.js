@@ -1,4 +1,5 @@
 const { Server } = require("socket.io");
+const model = require("./models/rooms.model");
 
 let rooms = [];
 
@@ -13,13 +14,23 @@ io.on("connection", (socket) => {
   console.log(`Socket with id: ${socket.id} has connected`);
 
   socket.on("get_rooms", () => {
-    socket.emit("all_rooms", rooms);
+    async function fetch() {
+      const result = await model.getAllRooms();
+      console.log(result);
+      io.emit("all_rooms", result);
+    }
+    fetch();
   });
 
   socket.on("create_room", (data) => {
-    rooms.push({ roomName: data, userId: socket.id });
-    console.log(`Socket with id: ${socket.id} has joined ${data}`);
-    socket.join(data);
+    async function fetch() {
+      await model.addRoom(data);
+      console.log(`Socket with id: ${socket.id} has joined ${data}`);
+      socket.join(data);
+      const result = await model.getAllRooms();
+      io.emit("all_rooms", result);
+    }
+    fetch();
   });
 
   socket.on("join_room", (data) => {
