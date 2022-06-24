@@ -1,10 +1,10 @@
 const db = require("../config/db");
 
-function getAllRooms() {
-  const sql = "SELECT * FROM rooms";
+function getAllUsersRoom(room) {
+  const sql = "SELECT * FROM inRoom WHERE room = ?";
 
   return new Promise((resolve, reject) => {
-    db.all(sql, (error, rows) => {
+    db.all(sql, room, (error, rows) => {
       if (error) {
         console.error(error.message);
         reject(error);
@@ -14,11 +14,11 @@ function getAllRooms() {
   });
 }
 
-function addRoom(room) {
-  const sql = "INSERT INTO rooms (room) VALUES (?)";
+function addUserRoom(room, username) {
+  const sql = "INSERT INTO inRoom (room, username) VALUES (?, ?)";
 
   return new Promise((resolve, reject) => {
-    db.run(sql, room, (error) => {
+    db.run(sql, room, username, (error) => {
       if (error) {
         console.error(error.message);
         reject(error);
@@ -28,11 +28,11 @@ function addRoom(room) {
   });
 }
 
-function deleteRoom(room) {
-  const sql = "DELETE FROM rooms WHERE room = ?";
+function deleteUserRoom(room, username) {
+  const sql = "DELETE FROM inRoom WHERE room = ? AND username = ?";
 
   return new Promise((resolve, reject) => {
-    db.run(sql, room, (error) => {
+    db.run(sql, room, username, (error) => {
       if (error) {
         console.error(error.message);
         reject(error);
@@ -43,7 +43,7 @@ function deleteRoom(room) {
 }
 
 module.exports = {
-  getAllRooms,
-  addRoom,
-  deleteRoom,
+  getAllUsersRoom,
+  addUserRoom,
+  deleteUserRoom,
 };

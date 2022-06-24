@@ -8,21 +8,29 @@ const db = new sqlite3.Database("db.sqlite", (error) => {
   const roomsStmt = `
     CREATE TABLE rooms (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT
+        room TEXT UNIQUE
     )
     `;
   const usersStmt = `
     CREATE TABLE users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT
+        username TEXT UNIQUE
+    )
+    `;
+  const inRoomStmt = `
+    CREATE TABLE inRoom (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        room TEXT,
+        username TEXT
     )
     `;
   const messagesStmt = `
     CREATE TABLE messages (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         message TEXT,
-        room_id INTEGER,
-        user_id INTEGER
+        room TEXT,
+        username TEXT,
+        timestamp TEXT
     )
     `;
   db.run(roomsStmt, (error) => {
@@ -31,6 +39,11 @@ const db = new sqlite3.Database("db.sqlite", (error) => {
     }
   });
   db.run(usersStmt, (error) => {
+    if (error) {
+      console.error(error.message);
+    }
+  });
+  db.run(inRoomStmt, (error) => {
     if (error) {
       console.error(error.message);
     }
