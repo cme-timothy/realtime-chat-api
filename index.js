@@ -1,7 +1,8 @@
 const { Server } = require("socket.io");
-const model = require("./models/rooms.model");
-
-let rooms = [];
+const modelRooms = require("./models/rooms.model");
+const modelUsers = require("./models/users.model");
+const modelInRoom = require("./models/inRoom.model");
+const modelMessages = require("./models/messages.model");
 
 const io = new Server({
   cors: {
@@ -15,8 +16,7 @@ io.on("connection", (socket) => {
 
   socket.on("get_rooms", () => {
     async function fetch() {
-      const result = await model.getAllRooms();
-      console.log(result);
+      const result = await modelRooms.getAllRooms();
       io.emit("all_rooms", result);
     }
     fetch();
@@ -27,8 +27,16 @@ io.on("connection", (socket) => {
       await model.addRoom(data);
       console.log(`Socket with id: ${socket.id} has joined ${data}`);
       socket.join(data);
-      const result = await model.getAllRooms();
+      const result = await modelRooms.getAllRooms();
       io.emit("all_rooms", result);
+    }
+    fetch();
+  });
+
+  socket.on("create_user", (data) => {
+    async function fetch() {
+      await modelUsers.addUser(data);
+      console.log(`Socket with id: ${socket.id} has created username: ${data}`);
     }
     fetch();
   });
