@@ -15,7 +15,7 @@ function getUser(username) {
 }
 
 function addUser(username) {
-  const sql = "INSERT INTO users (name) VALUES (?)";
+  const sql = "INSERT INTO users (username) VALUES (?)";
 
   return new Promise((resolve, reject) => {
     db.run(sql, username, (error) => {

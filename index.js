@@ -24,7 +24,7 @@ io.on("connection", (socket) => {
 
   socket.on("create_room", (data) => {
     async function fetch() {
-      await model.addRoom(data);
+      await modelRooms.addRoom(data);
       console.log(`Socket with id: ${socket.id} has joined ${data}`);
       socket.join(data);
       const result = await modelRooms.getAllRooms();
@@ -42,13 +42,11 @@ io.on("connection", (socket) => {
   });
 
   socket.on("join_room", (data) => {
-    rooms.push({ roomName: data, userId: socket.id });
     console.log(`Socket with id: ${socket.id} has joined ${data}`);
     socket.join(data);
   });
 
   socket.on("leave_room", (data) => {
-    rooms = rooms.filter((room) => room.roomName !== data);
     console.log(`Socket with id: ${socket.id} has left room: ${data}`);
     socket.leave(data);
   });
