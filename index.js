@@ -51,9 +51,27 @@ io.on("connection", (socket) => {
     socket.leave(data);
   });
 
-  socket.on("message", (data) => {
-    const parsedData = JSON.parse(data);
-    socket.to(parsedData.roomName).emit("new_message", parsedData.message);
+  socket.on("get_messages", (data) => {
+    async function fetch() {
+      const result = await modelMessages.getMessagesRoom(data);
+      const stringyResult = JSON.stringify(result);
+      io.emit("all_messages", stringyResult);
+    }
+    fetch();
+  });
+
+  socket.on("add_message", (data) => {
+    async function fetch() {
+      const parsedData = JSON.parse(data);
+      await modelMessages.addMessageRoom(
+        parsedData.message,
+        parsedData.room,
+        parsedData.username,
+        parsedData.timestamp
+      );
+      socket.to(parsedData.room).emit("new_message", data);
+    }
+    fetch();
   });
 
   socket.on("disconnect", (reason) => {
