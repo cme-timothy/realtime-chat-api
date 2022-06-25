@@ -17,7 +17,8 @@ io.on("connection", (socket) => {
   socket.on("get_rooms", () => {
     async function fetch() {
       const result = await modelRooms.getAllRooms();
-      io.emit("all_rooms", result);
+      const stringyResult = JSON.stringify(result);
+      io.emit("all_rooms", stringyResult);
     }
     fetch();
   });
@@ -27,8 +28,7 @@ io.on("connection", (socket) => {
       await modelRooms.addRoom(data);
       console.log(`Socket with id: ${socket.id} has joined ${data}`);
       socket.join(data);
-      const result = await modelRooms.getAllRooms();
-      io.emit("all_rooms", result);
+      socket.broadcast.emit("new_room", data);
     }
     fetch();
   });
