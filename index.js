@@ -26,7 +26,7 @@ io.on("connection", (socket) => {
   socket.on("create_room", (data) => {
     async function fetch() {
       await modelRooms.addRoom(data);
-      console.log(`Socket with id: ${socket.id} has joined ${data}`);
+      console.log(`Socket with id: ${socket.id} has joined room: ${data}`);
       socket.join(data);
       socket.broadcast.emit("new_room", data);
     }
@@ -42,7 +42,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("join_room", (data) => {
-    console.log(`Socket with id: ${socket.id} has joined ${data}`);
+    console.log(`Socket with id: ${socket.id} has joined room: ${data}`);
     socket.join(data);
   });
 
@@ -75,7 +75,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", (reason) => {
-    console.log(`Socket ${socket.id} disconnected. Reason: ${reason}`);
+    console.log(`Socket with id: ${socket.id} disconnected. Reason: ${reason}`);
   });
 });
 
