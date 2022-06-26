@@ -41,17 +41,43 @@ io.on("connection", (socket) => {
     fetch();
   });
 
+  socket.on("get_room_data", (data) => {
+    async function fetch() {
+      const onlineResult = await modelInRoom.getAllUsersRoom(data);
+      const stringyOnlineResult = JSON.stringify(onlineResult);
+      const messagesResult = await modelMessages.getMessagesRoom(data);
+      const stringyMessagesResult = JSON.stringify(messagesResult);
+      io.emit("all_room_data", stringyOnlineResult, stringyMessagesResult);
+    }
+    fetch();
+  });
+
   socket.on("join_room", (data) => {
-    console.log(`Socket with id: ${socket.id} has joined room: ${data}`);
-    socket.join(data);
+    async function fetch() {
+      const parsedData = JSON.parse(data);
+      await modelInRoom.addUserRoom(parsedData.room, parsedData.username);
+      console.log(
+        `Socket with id: ${socket.id} has joined room: ${parsedData.room}`
+      );
+      socket.join(parsedData.room);
+      socket.broadcast.emit("new_user_online", parsedData.username);
+    }
+    fetch();
   });
 
   socket.on("leave_room", (data) => {
-    console.log(`Socket with id: ${socket.id} has left room: ${data}`);
-    socket.leave(data);
+    async function fetch() {
+      const parsedData = JSON.parse(data);
+      await modelInRoom.deleteUserRoom(parsedData.room, parsedData.username);
+      console.log(
+        `Socket with id: ${socket.id} has left room: ${parsedData.room}`
+      );
+      socket.leave(parsedData.room);
+    }
+    fetch();
   });
 
-  socket.on("get_messages", (data) => {
+  socket.on("get_room_data", (data) => {
     async function fetch() {
       const result = await modelMessages.getMessagesRoom(data);
       const stringyResult = JSON.stringify(result);
