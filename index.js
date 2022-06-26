@@ -3,6 +3,7 @@ const modelRooms = require("./models/rooms.model");
 const modelUsers = require("./models/users.model");
 const modelInRoom = require("./models/inRoom.model");
 const modelMessages = require("./models/messages.model");
+const loggingMiddleware = require("./middlewares/logging");
 
 const io = new Server({
   cors: {
@@ -109,5 +110,7 @@ io.on("connection", (socket) => {
     console.log(`Socket with id: ${socket.id} disconnected. Reason: ${reason}`);
   });
 });
+
+io.use(loggingMiddleware);
 
 io.listen(4000);
