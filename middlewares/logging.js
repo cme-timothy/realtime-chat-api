@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const logFile = fs.createWriteStream("message.log", { flags: "a" });
+const logFile = fs.createWriteStream("message-recieved.log", { flags: "a" });
 
 function logging(socket, next) {
   socket.on("add_message", (data) => {
