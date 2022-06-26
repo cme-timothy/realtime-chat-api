@@ -73,7 +73,15 @@ io.on("connection", (socket) => {
         `Socket with id: ${socket.id} has left room: ${parsedData.room}`
       );
       socket.leave(parsedData.room);
-      socket.broadcast.emit("user_offline", parsedData.username);
+
+      const result = await modelInRoom.getAllUsersRoom(parsedData.room);
+      if (result.length === 0) {
+        await modelRooms.deleteRoom(parsedData.room);
+        await modelMessages.deleteMessagesRoom(parsedData.room);
+        io.emit("room_deleted", parsedData.room);
+      } else {
+        socket.broadcast.emit("user_offline", parsedData.username);
+      }
     }
     fetch();
   });
