@@ -73,6 +73,7 @@ io.on("connection", (socket) => {
         `Socket with id: ${socket.id} has left room: ${parsedData.room}`
       );
       socket.leave(parsedData.room);
+      socket.broadcast.emit("user_offline", parsedData.username);
     }
     fetch();
   });
