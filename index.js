@@ -77,15 +77,6 @@ io.on("connection", (socket) => {
     fetch();
   });
 
-  socket.on("get_room_data", (data) => {
-    async function fetch() {
-      const result = await modelMessages.getMessagesRoom(data);
-      const stringyResult = JSON.stringify(result);
-      io.emit("all_messages", stringyResult);
-    }
-    fetch();
-  });
-
   socket.on("add_message", (data) => {
     async function fetch() {
       const parsedData = JSON.parse(data);
