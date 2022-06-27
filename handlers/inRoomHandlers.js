@@ -13,7 +13,11 @@ module.exports = (io, socket) => {
 
   socket.on("join_room", async (data) => {
     const parsedData = JSON.parse(data);
-    await modelInRoom.addUserRoom(parsedData.room, parsedData.username);
+    await modelInRoom.addUserRoom(
+      parsedData.room,
+      parsedData.username,
+      socket.id
+    );
     console.log(
       `Socket with id: ${socket.id} has joined room: ${parsedData.room}`
     );
@@ -23,7 +27,7 @@ module.exports = (io, socket) => {
 
   socket.on("leave_room", async (data) => {
     const parsedData = JSON.parse(data);
-    await modelInRoom.deleteUserRoom(parsedData.room, parsedData.username);
+    await modelInRoom.deleteUserRoom(socket.id);
     console.log(
       `Socket with id: ${socket.id} has left room: ${parsedData.room}`
     );

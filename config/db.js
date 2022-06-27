@@ -14,14 +14,16 @@ const db = new sqlite3.Database("db.sqlite", (error) => {
   const usersStmt = `
     CREATE TABLE users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT UNIQUE
+        username TEXT UNIQUE,
+        socketId TEXT UNIQUE
     )
     `;
   const inRoomStmt = `
     CREATE TABLE inRoom (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         room TEXT,
-        username TEXT
+        username TEXT UNIQUE,
+        socketId TEXT UNIQUE
     )
     `;
   const messagesStmt = `

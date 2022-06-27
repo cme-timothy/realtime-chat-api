@@ -14,11 +14,11 @@ function getUser(username) {
   });
 }
 
-function addUser(username) {
-  const sql = "INSERT INTO users (username) VALUES (?)";
+function addUser(username, socketId) {
+  const sql = "INSERT INTO users (username, socketId) VALUES (?, ?)";
 
   return new Promise((resolve, reject) => {
-    db.run(sql, username, (error) => {
+    db.run(sql, username, socketId, (error) => {
       if (error) {
         console.error(error.message);
         reject(error);
@@ -28,11 +28,11 @@ function addUser(username) {
   });
 }
 
-function deleteUser(username) {
-  const sql = "DELETE FROM users WHERE username = ?";
+function deleteUser(socketId) {
+  const sql = "DELETE FROM users WHERE socketId = ?";
 
   return new Promise((resolve, reject) => {
-    db.run(sql, username, (error) => {
+    db.run(sql, socketId, (error) => {
       if (error) {
         console.error(error.message);
         reject(error);

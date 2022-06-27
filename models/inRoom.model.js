@@ -14,11 +14,25 @@ function getAllUsersRoom(room) {
   });
 }
 
-function addUserRoom(room, username) {
-  const sql = "INSERT INTO inRoom (room, username) VALUES (?, ?)";
+function getUserRoom(socketId) {
+  const sql = "SELECT * FROM inRoom WHERE socketId = ?";
 
   return new Promise((resolve, reject) => {
-    db.run(sql, room, username, (error) => {
+    db.get(sql, socketId, (error, rows) => {
+      if (error) {
+        console.error(error.message);
+        reject(error);
+      }
+      resolve(rows);
+    });
+  });
+}
+
+function addUserRoom(room, username, socketId) {
+  const sql = "INSERT INTO inRoom (room, username, socketId) VALUES (?, ?, ?)";
+
+  return new Promise((resolve, reject) => {
+    db.run(sql, room, username, socketId, (error) => {
       if (error) {
         console.error(error.message);
         reject(error);
@@ -28,11 +42,11 @@ function addUserRoom(room, username) {
   });
 }
 
-function deleteUserRoom(room, username) {
-  const sql = "DELETE FROM inRoom WHERE room = ? AND username = ?";
+function deleteUserRoom(socketId) {
+  const sql = "DELETE FROM inRoom WHERE socketId = ?";
 
   return new Promise((resolve, reject) => {
-    db.run(sql, room, username, (error) => {
+    db.run(sql, socketId, (error) => {
       if (error) {
         console.error(error.message);
         reject(error);
@@ -44,6 +58,7 @@ function deleteUserRoom(room, username) {
 
 module.exports = {
   getAllUsersRoom,
+  getUserRoom,
   addUserRoom,
   deleteUserRoom,
 };

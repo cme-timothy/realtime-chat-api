@@ -11,7 +11,11 @@ module.exports = (io, socket) => {
   socket.on("create_room", async (data) => {
     const parsedData = JSON.parse(data);
     await modelRooms.addRoom(parsedData.room);
-    await modelInRoom.addUserRoom(parsedData.room, parsedData.username);
+    await modelInRoom.addUserRoom(
+      parsedData.room,
+      parsedData.username,
+      socket.id
+    );
     console.log(
       `Socket with id: ${socket.id} has joined room: ${parsedData.room}`
     );
