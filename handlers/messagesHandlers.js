@@ -18,6 +18,17 @@ module.exports = (io, socket) => {
         parsedData.timestamp
       );
       socket.to(parsedData.room).emit("new_message", data);
+      socket.to(parsedData.room).emit("user_regret", data);
     }
+  });
+
+  socket.on("typing_message", (data) => {
+    const parsedData = JSON.parse(data);
+    socket.to(parsedData.room).emit("user_typing", data);
+  });
+
+  socket.on("no_message", (data) => {
+    const parsedData = JSON.parse(data);
+    socket.to(parsedData.room).emit("user_regret", data);
   });
 };
