@@ -10,29 +10,44 @@ module.exports = (io, socket) => {
     io.emit("all_rooms", stringyResult);
   });
 
-  socket.on("create_room", async (data) => {
+  socket.on("create_room", async (data, callback) => {
     const parsedData = JSON.parse(data);
-    if (parsedData.username === "") {
-      const guestUsername = `Guest-${Moniker.choose()}`;
-      await modelUsers.addUser(guestUsername, socket.id);
+    const nameTaken = await modelRooms.getRoom(parsedData.room);
+    if (nameTaken === undefined) {
+      if (parsedData.username === "") {
+        const guestUsername = `Guest-${Moniker.choose()}`;
+        await modelUsers.addUser(guestUsername, socket.id);
+        console.log(
+          `Socket with id: ${socket.id} has guest username: ${guestUsername}`
+        );
+        await modelInRoom.addUserRoom(
+          parsedData.room,
+          guestUsername,
+          socket.id
+        );
+        socket.to(parsedData.room).emit("new_user_online", guestUsername);
+      } else {
+        await modelInRoom.addUserRoom(
+          parsedData.room,
+          parsedData.username,
+          socket.id
+        );
+        socket.to(parsedData.room).emit("new_user_online", parsedData.username);
+      }
+      await modelRooms.addRoom(parsedData.room);
       console.log(
-        `Socket with id: ${socket.id} has guest username: ${guestUsername}`
+        `Socket with id: ${socket.id} has joined room: ${parsedData.room}`
       );
-      await modelInRoom.addUserRoom(parsedData.room, guestUsername, socket.id);
-      socket.to(parsedData.room).emit("new_user_online", guestUsername);
+      socket.join(parsedData.room);
+      socket.broadcast.emit("new_room", parsedData.room);
+
+      callback({
+        status: "ok",
+      });
     } else {
-      await modelInRoom.addUserRoom(
-        parsedData.room,
-        parsedData.username,
-        socket.id
-      );
-      socket.to(parsedData.room).emit("new_user_online", parsedData.username);
+      callback({
+        status: "Room taken",
+      });
     }
-    await modelRooms.addRoom(parsedData.room);
-    console.log(
-      `Socket with id: ${socket.id} has joined room: ${parsedData.room}`
-    );
-    socket.join(parsedData.room);
-    socket.broadcast.emit("new_room", parsedData.room);
   });
 };

@@ -14,6 +14,20 @@ function getAllRooms() {
   });
 }
 
+function getRoom(room) {
+  const sql = "SELECT * FROM rooms WHERE room = ?";
+
+  return new Promise((resolve, reject) => {
+    db.get(sql, room, (error, rows) => {
+      if (error) {
+        console.error(error.message);
+        reject(error);
+      }
+      resolve(rows);
+    });
+  });
+}
+
 function addRoom(room) {
   const sql = "INSERT INTO rooms (room) VALUES (?)";
 
@@ -44,6 +58,7 @@ function deleteRoom(room) {
 
 module.exports = {
   getAllRooms,
+  getRoom,
   addRoom,
   deleteRoom,
 };

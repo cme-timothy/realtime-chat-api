@@ -1,10 +1,10 @@
 const db = require("../config/db");
 
-function getUser(socketId) {
-  const sql = "SELECT * FROM users WHERE socketId = ?";
+function getUser(socketId, username) {
+  const sql = "SELECT * FROM users WHERE socketId = ? OR username = ?";
 
   return new Promise((resolve, reject) => {
-    db.get(sql, socketId, (error, rows) => {
+    db.get(sql, socketId, username, (error, rows) => {
       if (error) {
         console.error(error.message);
         reject(error);
