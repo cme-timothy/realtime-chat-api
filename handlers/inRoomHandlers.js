@@ -7,12 +7,20 @@ const Moniker = require("moniker");
 module.exports = (io, socket) => {
   socket.on("get_room_data", async (data) => {
     const onlineResult = await modelInRoom.getAllUsersRoom(data);
-    const stringyOnlineResult = JSON.stringify(onlineResult);
+    const excludeSender = onlineResult.filter(
+      (user) => user.socketId !== socket.id
+    );
+    const stringyOnlineResult = JSON.stringify(excludeSender);
     const messagesResult = await modelMessages.getMessagesRoom(data);
     const stringyMessagesResult = JSON.stringify(messagesResult);
     const userResult = await modelUsers.getUser(socket.id);
     const stringyUserResult = JSON.stringify(userResult);
-    io.emit("all_room_data", stringyOnlineResult, stringyMessagesResult, stringyUserResult);
+    io.emit(
+      "all_room_data",
+      stringyOnlineResult,
+      stringyMessagesResult,
+      stringyUserResult
+    );
   });
 
   socket.on("join_room", async (data) => {
