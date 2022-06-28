@@ -1,6 +1,8 @@
 const modelRooms = require("../models/rooms.model");
 const modelInRoom = require("../models/inRoom.model");
 const modelMessages = require("../models/messages.model");
+const modelUsers = require("../models/users.model");
+const Moniker = require("moniker");
 
 module.exports = (io, socket) => {
   socket.on("get_room_data", async (data) => {
@@ -8,21 +10,33 @@ module.exports = (io, socket) => {
     const stringyOnlineResult = JSON.stringify(onlineResult);
     const messagesResult = await modelMessages.getMessagesRoom(data);
     const stringyMessagesResult = JSON.stringify(messagesResult);
-    io.emit("all_room_data", stringyOnlineResult, stringyMessagesResult);
+    const userResult = await modelUsers.getUser(socket.id);
+    const stringyUserResult = JSON.stringify(userResult);
+    io.emit("all_room_data", stringyOnlineResult, stringyMessagesResult, stringyUserResult);
   });
 
   socket.on("join_room", async (data) => {
     const parsedData = JSON.parse(data);
-    await modelInRoom.addUserRoom(
-      parsedData.room,
-      parsedData.username,
-      socket.id
-    );
+    socket.join(parsedData.room);
+    if (parsedData.username === "") {
+      const guestUsername = `Guest-${Moniker.choose()}`;
+      await modelUsers.addUser(guestUsername, socket.id);
+      console.log(
+        `Socket with id: ${socket.id} has guest username: ${guestUsername}`
+      );
+      await modelInRoom.addUserRoom(parsedData.room, guestUsername, socket.id);
+      socket.to(parsedData.room).emit("new_user_online", guestUsername);
+    } else {
+      await modelInRoom.addUserRoom(
+        parsedData.room,
+        parsedData.username,
+        socket.id
+      );
+      socket.to(parsedData.room).emit("new_user_online", parsedData.username);
+    }
     console.log(
       `Socket with id: ${socket.id} has joined room: ${parsedData.room}`
     );
-    socket.join(parsedData.room);
-    socket.broadcast.emit("new_user_online", parsedData.username);
   });
 
   socket.on("leave_room", async (data) => {
@@ -39,7 +53,7 @@ module.exports = (io, socket) => {
       await modelMessages.deleteMessagesRoom(parsedData.room);
       io.emit("room_deleted", parsedData.room);
     } else {
-      socket.broadcast.emit("user_offline", parsedData.username);
+      socket.to(parsedData.room).emit("user_offline", parsedData.username);
     }
   });
 };

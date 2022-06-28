@@ -1,5 +1,7 @@
 const modelRooms = require("../models/rooms.model");
 const modelInRoom = require("../models/inRoom.model");
+const modelUsers = require("../models/users.model");
+const Moniker = require("moniker");
 
 module.exports = (io, socket) => {
   socket.on("get_rooms", async () => {
@@ -10,17 +12,27 @@ module.exports = (io, socket) => {
 
   socket.on("create_room", async (data) => {
     const parsedData = JSON.parse(data);
+    if (parsedData.username === "") {
+      const guestUsername = `Guest-${Moniker.choose()}`;
+      await modelUsers.addUser(guestUsername, socket.id);
+      console.log(
+        `Socket with id: ${socket.id} has guest username: ${guestUsername}`
+      );
+      await modelInRoom.addUserRoom(parsedData.room, guestUsername, socket.id);
+      socket.to(parsedData.room).emit("new_user_online", guestUsername);
+    } else {
+      await modelInRoom.addUserRoom(
+        parsedData.room,
+        parsedData.username,
+        socket.id
+      );
+      socket.to(parsedData.room).emit("new_user_online", parsedData.username);
+    }
     await modelRooms.addRoom(parsedData.room);
-    await modelInRoom.addUserRoom(
-      parsedData.room,
-      parsedData.username,
-      socket.id
-    );
     console.log(
       `Socket with id: ${socket.id} has joined room: ${parsedData.room}`
     );
     socket.join(parsedData.room);
     socket.broadcast.emit("new_room", parsedData.room);
-    socket.broadcast.emit("new_user_online", parsedData.username);
   });
 };
