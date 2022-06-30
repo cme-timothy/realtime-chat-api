@@ -17,12 +17,12 @@ module.exports = (io, socket) => {
         });
       } else {
         callback({
-          status: "Name taken",
+          status: "Name is taken.",
         });
       }
     } else {
       callback({
-        status: "Name empty",
+        status: "Name is empty.",
       });
     }
   });
