@@ -1,6 +1,6 @@
-# Realtime chatt API
+# Realtime chat API
 
-This is a simple realtime chatt API for my third node.js web server and database assignment.
+This is a simple realtime chat API for my third node.js web server and database assignment.
 
 ## Pre-requisites
 
