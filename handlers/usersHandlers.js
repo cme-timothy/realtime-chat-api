@@ -5,7 +5,7 @@ module.exports = (io, socket) => {
     const name = typeof data;
 
     if (name === "string" && data !== "") {
-      const nameTaken = await modelUsers.getUser("empty", data);
+      const nameTaken = await modelUsers.getUser(socket.id, data);
       if (nameTaken === undefined) {
         await modelUsers.addUser(data, socket.id);
         console.log(
@@ -14,6 +14,10 @@ module.exports = (io, socket) => {
 
         callback({
           status: "ok",
+        });
+      } else if (nameTaken.socketId === socket.id) {
+        callback({
+          status: "Name is already created.",
         });
       } else {
         callback({
