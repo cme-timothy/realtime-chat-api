@@ -13,7 +13,11 @@ module.exports = (io, socket) => {
   socket.on("create_room", async (data, callback) => {
     const parsedData = JSON.parse(data);
     const nameTaken = await modelRooms.getRoom(parsedData.room);
-    if (nameTaken === undefined) {
+    const alreadyInRoom = await modelInRoom.getUserRoom(
+      socket.id,
+      parsedData.username
+    );
+    if (nameTaken === undefined && alreadyInRoom === undefined) {
       if (parsedData.username === "") {
         const guestUsername = `Guest-${Moniker.choose()}`;
         await modelUsers.addUser(guestUsername, socket.id);

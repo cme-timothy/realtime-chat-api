@@ -25,26 +25,36 @@ module.exports = (io, socket) => {
 
   socket.on("join_room", async (data) => {
     const parsedData = JSON.parse(data);
-    socket.join(parsedData.room);
-    if (parsedData.username === "") {
-      const guestUsername = `Guest-${Moniker.choose()}`;
-      await modelUsers.addUser(guestUsername, socket.id);
-      console.log(
-        `Socket with id: ${socket.id} has guest username: ${guestUsername}`
-      );
-      await modelInRoom.addUserRoom(parsedData.room, guestUsername, socket.id);
-      socket.to(parsedData.room).emit("new_user_online", guestUsername);
-    } else {
-      await modelInRoom.addUserRoom(
-        parsedData.room,
-        parsedData.username,
-        socket.id
-      );
-      socket.to(parsedData.room).emit("new_user_online", parsedData.username);
-    }
-    console.log(
-      `Socket with id: ${socket.id} has joined room: ${parsedData.room}`
+    const alreadyInRoom = await modelInRoom.getUserRoom(
+      socket.id,
+      parsedData.username
     );
+    if (alreadyInRoom === undefined) {
+      socket.join(parsedData.room);
+      if (parsedData.username === "") {
+        const guestUsername = `Guest-${Moniker.choose()}`;
+        await modelUsers.addUser(guestUsername, socket.id);
+        console.log(
+          `Socket with id: ${socket.id} has guest username: ${guestUsername}`
+        );
+        await modelInRoom.addUserRoom(
+          parsedData.room,
+          guestUsername,
+          socket.id
+        );
+        socket.to(parsedData.room).emit("new_user_online", guestUsername);
+      } else {
+        await modelInRoom.addUserRoom(
+          parsedData.room,
+          parsedData.username,
+          socket.id
+        );
+        socket.to(parsedData.room).emit("new_user_online", parsedData.username);
+      }
+      console.log(
+        `Socket with id: ${socket.id} has joined room: ${parsedData.room}`
+      );
+    }
   });
 
   socket.on("leave_room", async (data) => {

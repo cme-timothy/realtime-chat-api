@@ -14,11 +14,11 @@ function getAllUsersRoom(room) {
   });
 }
 
-function getUserRoom(socketId) {
-  const sql = "SELECT * FROM inRoom WHERE socketId = ?";
+function getUserRoom(socketId, username) {
+  const sql = "SELECT * FROM inRoom WHERE socketId = ? OR username = ?";
 
   return new Promise((resolve, reject) => {
-    db.get(sql, socketId, (error, rows) => {
+    db.get(sql, socketId, username, (error, rows) => {
       if (error) {
         console.error(error.message);
         reject(error);
