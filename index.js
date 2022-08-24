@@ -25,4 +25,4 @@ io.on("connection", onConnection);
 
 io.use(loggingMiddleware);
 
-io.listen(4000);
+io.listen(process.env.PORT);
