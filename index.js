@@ -8,8 +8,9 @@ const loggingMiddleware = require("./middlewares/logging");
 
 const io = new Server({
   cors: {
-    origin: "https://timothys-realtime-chat-klient.herokuapp.com/",
+    origin: "https://timothys-realtime-chat-klient.herokuapp.com",
     methods: ["GET", "POST"],
+    credentials: true
   },
 });
 
