@@ -6,7 +6,7 @@ module.exports = (io, socket) => {
 
     if (name === "string" && data !== "") {
       const nameTaken = await modelUsers.getUser(socket.id, data);
-      if (nameTaken === undefined) {
+      if (nameTaken.length === 0) {
         await modelUsers.addUser(data, socket.id);
         console.log(
           `Socket with id: ${socket.id} has created username: ${data}`

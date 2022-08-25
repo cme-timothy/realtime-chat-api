@@ -17,7 +17,7 @@ module.exports = (io, socket) => {
       socket.id,
       parsedData.username
     );
-    if (nameTaken === undefined && alreadyInRoom === undefined) {
+    if (nameTaken.length === 0 && alreadyInRoom.length === 0) {
       if (parsedData.username === "") {
         const guestUsername = `Guest-${Moniker.choose()}`;
         await modelUsers.addUser(guestUsername, socket.id);

@@ -1,59 +1,72 @@
-const db = require("../config/db");
+const config = require("../knexfile");
+const knex = require("knex")(config[process.env.NODE_ENV]);
 
-function getAllUsersRoom(room) {
-  const sql = "SELECT * FROM inRoom WHERE room = ?";
-
-  return new Promise((resolve, reject) => {
-    db.all(sql, room, (error, rows) => {
-      if (error) {
-        console.error(error.message);
-        reject(error);
-      }
-      resolve(rows);
-    });
-  });
+async function getAllUsersRoom(room) {
+  if (room === undefined) {
+    return [];
+  } else {
+    try {
+      const allUsersRoom = await knex
+        .select()
+        .from("inRoom")
+        .where({ room: room });
+      console.log(allUsersRoom);
+      return allUsersRoom;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }
 
-function getUserRoom(socketId, username) {
-  const sql = "SELECT * FROM inRoom WHERE socketId = ? OR username = ?";
-
-  return new Promise((resolve, reject) => {
-    db.get(sql, socketId, username, (error, rows) => {
-      if (error) {
-        console.error(error.message);
-        reject(error);
-      }
-      resolve(rows);
-    });
-  });
+async function getUserRoom(socketId, username) {
+  if (username === undefined) {
+    try {
+      const foundUserRoom = await knex
+        .select()
+        .from("inRoom")
+        .where({ socketId: socketId });
+      return foundUserRoom;
+    } catch (error) {
+      console.log(error);
+    }
+  } else {
+    try {
+      const foundUserRoom = await knex
+        .select()
+        .from("inRoom")
+        .where({ socketId: socketId })
+        .orWhere({ username: username });
+      return foundUserRoom;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }
 
-function addUserRoom(room, username, socketId) {
-  const sql = "INSERT INTO inRoom (room, username, socketId) VALUES (?, ?, ?)";
-
-  return new Promise((resolve, reject) => {
-    db.run(sql, room, username, socketId, (error) => {
-      if (error) {
-        console.error(error.message);
-        reject(error);
-      }
-      resolve();
+async function addUserRoom(room, username, socketId) {
+  console.log(username);
+  console.log(socketId);
+  try {
+    const insertUserRoom = await knex("inRoom").insert({
+      room: room,
+      username: username,
+      socketId: socketId,
     });
-  });
+    return insertUserRoom;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
-function deleteUserRoom(socketId) {
-  const sql = "DELETE FROM inRoom WHERE socketId = ?";
-
-  return new Promise((resolve, reject) => {
-    db.run(sql, socketId, (error) => {
-      if (error) {
-        console.error(error.message);
-        reject(error);
-      }
-      resolve();
-    });
-  });
+async function deleteUserRoom(socketId) {
+  try {
+    const deleteUserRoom = await knex("inRoom")
+      .where({ socketId: socketId })
+      .del();
+    return deleteUserRoom;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 module.exports = {

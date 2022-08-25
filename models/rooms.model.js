@@ -1,59 +1,44 @@
-const db = require("../config/db");
+const config = require("../knexfile");
+const knex = require("knex")(config[process.env.NODE_ENV]);
 
-function getAllRooms() {
-  const sql = "SELECT * FROM rooms";
-
-  return new Promise((resolve, reject) => {
-    db.all(sql, (error, rows) => {
-      if (error) {
-        console.error(error.message);
-        reject(error);
-      }
-      resolve(rows);
-    });
-  });
+async function getAllRooms() {
+  try {
+    const allRooms = await knex.select().from("rooms");
+    return allRooms;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
-function getRoom(room) {
-  const sql = "SELECT * FROM rooms WHERE room = ?";
-
-  return new Promise((resolve, reject) => {
-    db.get(sql, room, (error, rows) => {
-      if (error) {
-        console.error(error.message);
-        reject(error);
-      }
-      resolve(rows);
-    });
-  });
+async function getRoom(room) {
+  try {
+    const foundRoom = await knex.select().table("rooms").where({ room: room });
+    return foundRoom;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
-function addRoom(room) {
-  const sql = "INSERT INTO rooms (room) VALUES (?)";
-
-  return new Promise((resolve, reject) => {
-    db.run(sql, room, (error) => {
-      if (error) {
-        console.error(error.message);
-        reject(error);
-      }
-      resolve();
-    });
-  });
+async function addRoom(room) {
+  try {
+    const insertRoom = await knex("rooms").insert({ room: room });
+    return insertRoom;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
-function deleteRoom(room) {
-  const sql = "DELETE FROM rooms WHERE room = ?";
-
-  return new Promise((resolve, reject) => {
-    db.run(sql, room, (error) => {
-      if (error) {
-        console.error(error.message);
-        reject(error);
-      }
-      resolve();
-    });
-  });
+async function deleteRoom(room) {
+  if (room === undefined) {
+    return [];
+  } else {
+    try {
+      const deleteRoom = await knex("rooms").where({ room: room }).del();
+      return deleteRoom;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }
 
 module.exports = {

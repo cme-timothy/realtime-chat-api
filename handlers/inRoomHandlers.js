@@ -29,7 +29,7 @@ module.exports = (io, socket) => {
       socket.id,
       parsedData.username
     );
-    if (alreadyInRoom === undefined) {
+    if (alreadyInRoom.length === 0) {
       socket.join(parsedData.room);
       if (parsedData.username === "") {
         const guestUsername = `Guest-${Moniker.choose()}`;

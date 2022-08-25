@@ -11,10 +11,9 @@ module.exports = (io, socket) => {
     await modelInRoom.deleteUserRoom(socket.id);
     await modelUsers.deleteUser(socket.id);
     console.log(`Socket with id: ${socket.id} disconnected. Reason: ${reason}`);
-    if (inRoomResult !== undefined) {
+    if (inRoomResult.length !== 0) {
       socket.leave(inRoomResult.room);
       socket.broadcast.emit("user_offline", inRoomResult.username);
-
       const allUsersInRoomResult = await modelInRoom.getAllUsersRoom(
         inRoomResult.room
       );

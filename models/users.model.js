@@ -1,45 +1,52 @@
-const db = require("../config/db");
+const config = require("../knexfile");
+const knex = require("knex")(config[process.env.NODE_ENV]);
 
-function getUser(socketId, username) {
-  const sql = "SELECT * FROM users WHERE socketId = ? OR username = ?";
-
-  return new Promise((resolve, reject) => {
-    db.get(sql, socketId, username, (error, rows) => {
-      if (error) {
-        console.error(error.message);
-        reject(error);
-      }
-      resolve(rows);
-    });
-  });
+async function getUser(socketId, username) {
+  if (username === undefined) {
+    try {
+      const foundUser = await knex
+        .select()
+        .from("users")
+        .where({ socketId: socketId });
+      return foundUser;
+    } catch (error) {
+      console.log(error);
+    }
+  } else {
+    try {
+      const foundUser = await knex
+        .select()
+        .from("users")
+        .where({ socketId: socketId })
+        .orWhere({ username: username });
+      return foundUser;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }
 
-function addUser(username, socketId) {
-  const sql = "INSERT INTO users (username, socketId) VALUES (?, ?)";
-
-  return new Promise((resolve, reject) => {
-    db.run(sql, username, socketId, (error) => {
-      if (error) {
-        console.error(error.message);
-        reject(error);
-      }
-      resolve();
+async function addUser(username, socketId) {
+  console.log(username);
+  console.log(socketId);
+  try {
+    const insertUser = await knex("users").insert({
+      username: username,
+      socketId: socketId,
     });
-  });
+    return insertUser;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
-function deleteUser(socketId) {
-  const sql = "DELETE FROM users WHERE socketId = ?";
-
-  return new Promise((resolve, reject) => {
-    db.run(sql, socketId, (error) => {
-      if (error) {
-        console.error(error.message);
-        reject(error);
-      }
-      resolve();
-    });
-  });
+async function deleteUser(socketId) {
+  try {
+    const deleteUser = await knex("users").where({ socketId: socketId }).del();
+    return deleteUser;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 module.exports = {

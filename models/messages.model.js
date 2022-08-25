@@ -1,46 +1,39 @@
-const db = require("../config/db");
+const config = require("../knexfile");
+const knex = require("knex")(config[process.env.NODE_ENV]);
 
-function getMessagesRoom(room) {
-  const sql = "SELECT * FROM messages WHERE room = ?";
-
-  return new Promise((resolve, reject) => {
-    db.all(sql, room, (error, rows) => {
-      if (error) {
-        console.error(error.message);
-        reject(error);
-      }
-      resolve(rows);
-    });
-  });
+async function getMessagesRoom(room) {
+  try {
+    const foundMessages = await knex
+      .select()
+      .from("messages")
+      .where({ room: room });
+    return foundMessages;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
-function addMessageRoom(message, room, username, timestamp) {
-  const sql =
-    "INSERT INTO messages (message, room, username, timestamp) VALUES (?, ?, ?, ?)";
-
-  return new Promise((resolve, reject) => {
-    db.run(sql, [message, room, username, timestamp], (error) => {
-      if (error) {
-        console.error(error.message);
-        reject(error);
-      }
-      resolve();
+async function addMessageRoom(message, room, username, timestamp) {
+  try {
+    const insertMessage = await knex("messages").insert({
+      message: message,
+      room: room,
+      username: username,
+      timestamp: timestamp,
     });
-  });
+    return insertMessage;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
-function deleteMessagesRoom(room) {
-  const sql = "DELETE FROM messages WHERE room = ?";
-
-  return new Promise((resolve, reject) => {
-    db.run(sql, room, (error) => {
-      if (error) {
-        console.error(error.message);
-        reject(error);
-      }
-      resolve();
-    });
-  });
+async function deleteMessagesRoom(room) {
+  try {
+    const deleteMessages = await knex("messages").where({ room: room }).del();
+    return deleteMessages;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 module.exports = {

@@ -1,12 +1,14 @@
 {
   "dependencies": {
+    "knex": "^2.2.0",
     "moniker": "^0.1.2",
+    "pg": "^8.8.0",
     "socket.io": "^4.5.1",
     "sqlite3": "^5.0.8"
   },
   "engines": {
-  "npm": "8.15.0",
-  "node": "16.17.0"
+    "npm": "8.15.0",
+    "node": "16.17.0"
   },
   "scripts": {
     "start": "node index.js"
