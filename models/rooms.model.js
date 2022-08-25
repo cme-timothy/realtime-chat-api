@@ -1,5 +1,5 @@
 const config = require("../knexfile");
-const knex = require("knex")(config[process.env.NODE_ENV]);
+const knex = require("knex")(config[process.env.NODE_ENV] || config["development"]);
 
 async function getAllRooms() {
   try {

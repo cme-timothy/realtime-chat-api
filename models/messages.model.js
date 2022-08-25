@@ -1,5 +1,7 @@
 const config = require("../knexfile");
-const knex = require("knex")(config[process.env.NODE_ENV]);
+const knex = require("knex")(
+  config[process.env.NODE_ENV] || config["development"]
+);
 
 async function getMessagesRoom(room) {
   try {
@@ -28,11 +30,15 @@ async function addMessageRoom(message, room, username, timestamp) {
 }
 
 async function deleteMessagesRoom(room) {
-  try {
-    const deleteMessages = await knex("messages").where({ room: room }).del();
-    return deleteMessages;
-  } catch (error) {
-    console.log(error);
+  if (room === undefined) {
+    return [];
+  } else {
+    try {
+      const deleteMessages = await knex("messages").where({ room: room }).del();
+      return deleteMessages;
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
 

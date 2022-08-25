@@ -1,5 +1,7 @@
 const config = require("../knexfile");
-const knex = require("knex")(config[process.env.NODE_ENV]);
+const knex = require("knex")(
+  config[process.env.NODE_ENV] || config["development"]
+);
 
 async function getUser(socketId, username) {
   if (username === undefined) {
@@ -27,8 +29,6 @@ async function getUser(socketId, username) {
 }
 
 async function addUser(username, socketId) {
-  console.log(username);
-  console.log(socketId);
   try {
     const insertUser = await knex("users").insert({
       username: username,

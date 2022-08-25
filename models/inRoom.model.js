@@ -1,5 +1,7 @@
 const config = require("../knexfile");
-const knex = require("knex")(config[process.env.NODE_ENV]);
+const knex = require("knex")(
+  config[process.env.NODE_ENV] || config["development"]
+);
 
 async function getAllUsersRoom(room) {
   if (room === undefined) {
@@ -10,7 +12,6 @@ async function getAllUsersRoom(room) {
         .select()
         .from("inRoom")
         .where({ room: room });
-      console.log(allUsersRoom);
       return allUsersRoom;
     } catch (error) {
       console.log(error);
@@ -44,8 +45,6 @@ async function getUserRoom(socketId, username) {
 }
 
 async function addUserRoom(room, username, socketId) {
-  console.log(username);
-  console.log(socketId);
   try {
     const insertUserRoom = await knex("inRoom").insert({
       room: room,
