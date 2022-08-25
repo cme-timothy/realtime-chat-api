@@ -14,7 +14,7 @@ module.exports = (io, socket) => {
     const messagesResult = await modelMessages.getMessagesRoom(data);
     const stringyMessagesResult = JSON.stringify(messagesResult);
     const userResult = await modelUsers.getUser(socket.id);
-    const stringyUserResult = JSON.stringify(userResult);
+    const stringyUserResult = JSON.stringify(userResult[0]);
     io.emit(
       "all_room_data",
       stringyOnlineResult,

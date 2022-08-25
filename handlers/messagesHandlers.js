@@ -22,7 +22,7 @@ module.exports = (io, socket) => {
       socket.to(parsedData.room).emit("user_regret", data);
     } else {
       const userData = await modelUsers.getUser("empty", directMessage);
-      io.to(userData.socketId).emit("direct_message", data);
+      io.to(userData[0].socketId).emit("direct_message", data);
       socket.to(parsedData.room).emit("user_regret", data);
     }
   });
