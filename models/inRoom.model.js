@@ -10,7 +10,7 @@ async function getAllUsersRoom(room) {
     try {
       const allUsersRoom = await knex
         .select()
-        .from("inRoom")
+        .from("inroom")
         .where({ room: room });
       return allUsersRoom;
     } catch (error) {
@@ -24,7 +24,7 @@ async function getUserRoom(socketId, username) {
     try {
       const foundUserRoom = await knex
         .select()
-        .from("inRoom")
+        .from("inroom")
         .where({ socketId: socketId });
       return foundUserRoom;
     } catch (error) {
@@ -34,7 +34,7 @@ async function getUserRoom(socketId, username) {
     try {
       const foundUserRoom = await knex
         .select()
-        .from("inRoom")
+        .from("inroom")
         .where({ socketId: socketId })
         .orWhere({ username: username });
       return foundUserRoom;
@@ -46,7 +46,7 @@ async function getUserRoom(socketId, username) {
 
 async function addUserRoom(room, username, socketId) {
   try {
-    const insertUserRoom = await knex("inRoom").insert({
+    const insertUserRoom = await knex("inroom").insert({
       room: room,
       username: username,
       socketId: socketId,
@@ -59,7 +59,7 @@ async function addUserRoom(room, username, socketId) {
 
 async function deleteUserRoom(socketId) {
   try {
-    const deleteUserRoom = await knex("inRoom")
+    const deleteUserRoom = await knex("inroom")
       .where({ socketId: socketId })
       .del();
     return deleteUserRoom;

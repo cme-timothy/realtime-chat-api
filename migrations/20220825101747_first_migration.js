@@ -13,7 +13,7 @@ exports.up = function (knex) {
       table.text("username").unique();
       table.text("socketId").unique();
     })
-    .createTable("inRoom", (table) => {
+    .createTable("inroom", (table) => {
       table.increments("id").primary();
       table.text("room");
       table.text("username").unique();
