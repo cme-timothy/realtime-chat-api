@@ -17,5 +17,5 @@ jobs:
       - uses: actions/setup-node@v3
       - with:
           node-version: 16
-        run: "npm install"
-        run: "npx eslint realtime-chat-api/*.js"
+      - run: "npm install"
+      - run: "npx eslint realtime-chat-api/*.js"
