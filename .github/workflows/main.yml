@@ -28,4 +28,4 @@ jobs:
       - with:
           node-version: 16
       - run: "npm install"
-      - run: "npx eslint realtime-chat-api/*.js"
+      - run: "npx eslint *.js"
